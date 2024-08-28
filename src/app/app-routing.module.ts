@@ -1,7 +1,8 @@
 import { Component, NgModule } from '@angular/core';
-import { RouterModule, Routes, CanActivateFn, CanActivate } from '@angular/router';
+import { RouterModule, Routes, CanActivate } from '@angular/router';
 import { Page404Component } from './shared/pages/page404/page404.component';
-import { canActivateGuard, canMatchGuard } from './auth/guards/auth.guard';
+import { AuthGuard} from './auth/guards/auth.guard';
+
 
 
 const routes: Routes = [
@@ -12,8 +13,8 @@ const routes: Routes = [
   {
     path:'heroes',
     loadChildren:()=>import('./heroes/heroes.module').then(m=>m.HeroesModule),
-    canActivate:[canActivateGuard],
-    canMatch:[canMatchGuard]
+    canActivate: [AuthGuard],
+    canMatch: [AuthGuard]
   },
 {
   path:'404',

@@ -28,7 +28,9 @@ import { ConfirmDilalogComponent } from './components/confirm-dilalog/confirm-di
   ],
   imports: [
     CommonModule,
-    HeroesRoutingModule,MaterialModule,ReactiveFormsModule
+    HeroesRoutingModule,
+    MaterialModule,
+    ReactiveFormsModule
   ]
 })
 export class HeroesModule { }

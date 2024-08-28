@@ -1,51 +1,39 @@
 import { AuthService } from './../service/auth.service';
-
-import { inject } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { ActivatedRouteSnapshot, CanActivate, CanMatch, Route, UrlSegment, RouterStateSnapshot, Router} from '@angular/router';
 import { Observable, tap } from 'rxjs';
-import {
-  ActivatedRouteSnapshot,
-  CanActivateFn,
-  CanMatchFn,
-  Route,
-  Router,
-  RouterStateSnapshot,
-  UrlSegment,
-} from '@angular/router';
 
 
-const checkAuthStatus = (): boolean | Observable<boolean> => {
-  //se inyectan el AuthService y el Router
-  const authService: AuthService = inject(AuthService);
-  const router: Router = inject(Router);
 
-  return authService.checkAuthentication().pipe(
-    tap((isAuthenticated) => {
-      if (!isAuthenticated) {
-        router.navigate(['/auth/login']);
-      }
-    })
-  );
-};
+@Injectable({ providedIn: 'root' })
+export class AuthGuard implements CanMatch, CanActivate {
 
-//No hay necesidad de crear una clase, simplemente definiendo una función flecha y exportándola podemos utilizar sus funcionalidades de guard en el app-routing
-export const canActivateGuard: CanActivateFn = (
-  //Hay que tener en cuenta el tipado CanActiveFn
-  route: ActivatedRouteSnapshot,
-  state: RouterStateSnapshot
-) => {
-  console.log('CanActivate');
-  console.log({ route, state });
 
-  return checkAuthStatus();
-};
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+  ) { }
 
-export const canMatchGuard: CanMatchFn = (
-  //Tipado CanMatchFN
-  route: Route,
-  segments: UrlSegment[]
-) => {
-  console.log('CanMatch');
-  console.log({ route, segments });
+  private checkAuthStatus(): boolean | Observable<boolean> {
 
-  return checkAuthStatus();
-};
+    return this.authService.checkAuthentication()
+    .pipe(
+      tap( isAuthenticated => {
+        if ( !isAuthenticated ){
+          this.router.navigate(['./auth/login'])
+        }
+      })
+    )
+  }
+
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | Observable<boolean> {
+
+    return this.checkAuthStatus();
+  }
+
+  canMatch(route: Route, segments: UrlSegment[]): boolean | Observable<boolean> {
+
+    return this.checkAuthStatus();
+  }
+
+}
